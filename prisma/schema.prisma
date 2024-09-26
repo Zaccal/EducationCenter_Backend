@@ -52,7 +52,7 @@ model Lesson {
 
   homeworks Homework[]
 
-  topic Topic @relation(fields: [topicId], references: [id])
+  topic Topic? @relation(fields: [topicId], references: [id])
   topicId Int
 }
 

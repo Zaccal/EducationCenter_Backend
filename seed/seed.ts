@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 const createUsers = async () => {
     const users: Prisma.UserCreateInput[] = [];
 
-    for (let index = 1; index <= 8; index++) {
+    for (let index = 1; index <= 10; index++) {
         const hashedPassword = await hash('12345678');
 
         users.push({
@@ -24,26 +24,37 @@ const createUsers = async () => {
     });
 };
 
-const createLessons = async () => {
-    const lessons: Prisma.LessonCreateInput[] = [];
-
-    for (let index = 2; index <= 11; index++) {
-        lessons.push({
-            title: faker.lorem.sentence(14),
-            url: 'https://www.youtube.com/embed/sUwD3GRPJos?si=U5mIJNTWsrijWb_W',
+const createTopic = async () => {
+    for (let index = 1; index <= 10; index++) {
+        await prisma.topic.create({
+            data: {
+                title: faker.lorem.sentence(),
+            },
         });
     }
+};
 
-    await prisma.lesson.createMany({
-        data: lessons,
-    });
+const createLessons = async () => {
+    for (let index = 1; index <= 10; index++) {
+        await prisma.lesson.create({
+            data: {
+                title: faker.lorem.sentence(14),
+                url: 'https://www.youtube.com/embed/sUwD3GRPJos?si=U5mIJNTWsrijWb_W',
+                topic: {
+                    connect: {
+                        id: index,
+                    },
+                },
+            },
+        });
+    }
 };
 
 const createQuestion = async () => {
-    for (let index = 1; index <= 10; index++) {
-        const randomCount = faker.number.int({ min: 2, max: 11 });
+    for (let index = 1; index <= 30; index++) {
+        const randomCount = faker.number.int({ min: 2, max: 10 });
 
-        for (let indexFirst = 2; indexFirst <= randomCount; indexFirst++) {
+        for (let indexFirst = 1; indexFirst <= randomCount; indexFirst++) {
             await prisma.question.create({
                 data: {
                     comment: faker.lorem.lines({ min: 1, max: 3 }),
@@ -64,7 +75,7 @@ const createQuestion = async () => {
 };
 
 const createAnswers = async () => {
-    for (let index = 1; index <= 40; index++) {
+    for (let index = 1; index <= 100; index++) {
         await prisma.answer.create({
             data: {
                 comment: faker.lorem.lines({ min: 2, max: 5 }),
@@ -84,8 +95,8 @@ const createAnswers = async () => {
 };
 
 const createHomeworks = async () => {
-    for (let index = 1; index <= 10; index++) {
-        const randomCount = faker.number.int({ min: 3, max: 11 });
+    for (let index = 1; index <= 30; index++) {
+        const randomCount = faker.number.int({ min: 2, max: 10 });
 
         for (let indexFirst = 2; indexFirst <= randomCount; indexFirst++) {
             await prisma.homework.create({

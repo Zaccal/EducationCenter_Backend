@@ -52,9 +52,10 @@ const createLessons = async () => {
 
 const createQuestion = async () => {
     for (let index = 1; index <= 30; index++) {
-        const randomCount = faker.number.int({ min: 2, max: 10 });
+        const randomCount = faker.number.int({ min: 6, max: 10 });
+        const randomStart = faker.number.int({ min: 1, max: 5 });
 
-        for (let indexFirst = 1; indexFirst <= randomCount; indexFirst++) {
+        for (let indexFirst = randomStart; indexFirst <= randomCount; indexFirst++) {
             await prisma.question.create({
                 data: {
                     comment: faker.lorem.lines({ min: 1, max: 3 }),
@@ -120,8 +121,14 @@ const createHomeworks = async () => {
 };
 
 async function main() {
-    // await prisma.$executeRaw`TRUNCATE TABLE "Homework" RESTART IDENTITY CASCADE`;
-    // createHomeworks();
+    // await prisma.$executeRaw`TRUNCATE TABLE "Topic" RESTART IDENTITY CASCADE`;
+
+    // createUsers();
+    // createTopic();
+    // createLessons();
+    // createQuestion();
+    // createAnswers();
+    createHomeworks();
 }
 
 main()

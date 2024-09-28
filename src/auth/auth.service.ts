@@ -4,16 +4,10 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { hash, verify } from 'argon2';
 import { PrismaService } from 'src/prisma.service';
 import { loginDto } from './dto/login.dto';
 import { registerDto } from './dto/register.dto';
-
-interface ITokens {
-    accessToken: string;
-    refreshToken: string;
-}
 
 @Injectable()
 export class AuthService {
@@ -22,7 +16,7 @@ export class AuthService {
         private jwt: JwtService,
     ) {}
 
-    async register(dto: registerDto) {
+    async register(dto: registerDto, userAgent: string) {
         const user = await this.validateUserToRegister(dto);
 
         const hashedPassword = await hash(user.password);
@@ -34,9 +28,14 @@ export class AuthService {
             },
         });
 
-        const tokens = this.issueTokens(newUser.id);
+        const tokens = this.issueTokens(newUser.id, userAgent);
+        await this.storeRefreshToken(
+            newUser.id,
+            userAgent,
+            tokens.refreshToken,
+        );
 
-        return this.returnFieldsUser(tokens, newUser);
+        return tokens;
     }
 
     private async validateUserToRegister(user: registerDto) {
@@ -62,7 +61,7 @@ export class AuthService {
         return user;
     }
 
-    private issueTokens(id: number) {
+    private issueTokens(id: number, agent: string = 'web') {
         const data = {
             id,
         };
@@ -71,9 +70,12 @@ export class AuthService {
             expiresIn: '15m',
         });
 
-        const refreshToken = this.jwt.sign(data, {
-            expiresIn: '7d',
-        });
+        const refreshToken = this.jwt.sign(
+            { agent, id },
+            {
+                expiresIn: '7d',
+            },
+        );
 
         return {
             accessToken,
@@ -81,22 +83,34 @@ export class AuthService {
         };
     }
 
-    private returnFieldsUser(tokens: ITokens, user: User) {
-        return {
-            user: {
-                id: user.id,
-                email: user.email,
+    private async storeRefreshToken(
+        id: number,
+        agent: string,
+        refreshToken: string,
+    ) {
+        await this.prismaService.refreshTokens.create({
+            data: {
+                userId: id,
+                agent: agent,
+                token: refreshToken,
             },
-            ...tokens,
-        };
+        });
     }
 
-    async login(dto: loginDto) {
+    async login(dto: loginDto, agent: string) {
         const user = await this.validateUserToLogin(dto);
 
-        const tokens = this.issueTokens(user.id);
+        await this.prismaService.refreshTokens.deleteMany({
+            where: {
+                agent,
+            },
+        });
 
-        return this.returnFieldsUser(tokens, user);
+        const tokens = this.issueTokens(user.id, agent);
+
+        await this.storeRefreshToken(user.id, agent, tokens.refreshToken);
+
+        return tokens;
     }
 
     private async validateUserToLogin(user: loginDto) {
@@ -118,24 +132,61 @@ export class AuthService {
 
     async getNewTokens(refreshToken: string) {
         try {
-            const validateUser = await this.jwt.verifyAsync<{ id: number }>(
-                refreshToken,
+            const decoded = await this.verifyRefreshToken(refreshToken);
+
+            const tokens = this.issueTokens(decoded.id, decoded.agent);
+            await this.storeRefreshToken(
+                decoded.id,
+                decoded.agent,
+                tokens.refreshToken,
             );
 
-            if (!validateUser)
-                throw new BadRequestException('Token is not valid');
+            return tokens;
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
 
-            const user = await this.prismaService.user.findFirst({
+    private async verifyRefreshToken(refreshToken: string) {
+        const decoded = await this.jwt.verifyAsync<{
+            id: number;
+            agent: string;
+        }>(refreshToken);
+
+        const tokenInDb = await this.prismaService.refreshTokens.findFirst({
+            where: {
+                userId: decoded.id,
+                agent: decoded.agent,
+                token: refreshToken,
+            },
+        });
+
+        if (!tokenInDb) {
+            this.prismaService.refreshTokens.deleteMany({
                 where: {
-                    id: validateUser.id,
+                    userId: decoded.id,
                 },
             });
 
-            const tokens = this.issueTokens(user.id);
+            throw new BadRequestException('Invalid token');
+        }
 
-            return this.returnFieldsUser(tokens, user);
+        return decoded;
+    }
+
+    async logout(refreshToken: string) {
+        try {
+            const decoded = await this.verifyRefreshToken(refreshToken);
+
+            await this.prismaService.refreshTokens.deleteMany({
+                where: {
+                    agent: decoded.agent,
+                    userId: decoded.id,
+                    token: refreshToken,
+                },
+            });
         } catch (error) {
-            throw new BadRequestException('Error: ' + error.message);
+            throw new BadRequestException(error.message);
         }
     }
 }

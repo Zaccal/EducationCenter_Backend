@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import { AppModule } from './app.module';
 
@@ -12,6 +13,8 @@ async function bootstrap() {
 
     app.enableCors();
     app.setGlobalPrefix('api');
+
+    app.use(cookieParser());
 
     // Swagger documentation
     const config = new DocumentBuilder()

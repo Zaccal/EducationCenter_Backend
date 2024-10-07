@@ -39,7 +39,7 @@ export class RoleCheck implements CanActivate {
             if (auth.split(' ').length < 2) return false;
 
             const isValid = this.jwtService.verify<{ id: number }>(token, {
-                secret: process.env.JWT_SECRET_KEY,
+                secret: process.env.JWT_SECRET_KEY_ACCESS,
             });
 
             if (isValid) {

@@ -2,10 +2,11 @@ import {
     BadRequestException,
     Body,
     Controller,
-    HttpCode,
     Post,
     Req,
     Res,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -16,8 +17,8 @@ import { registerDto } from './dto/register.dto';
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    @HttpCode(200)
     @Post('/register')
+    @UsePipes(new ValidationPipe())
     async register(
         @Body() dto: registerDto,
         @Req() request: Request,
@@ -30,21 +31,21 @@ export class AuthController {
 
         response.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 900 * 1000,
         });
 
         response.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
     }
 
-    @HttpCode(200)
     @Post('/login')
+    @UsePipes(new ValidationPipe())
     async login(
         @Body() dto: loginDto,
         @Req() request: Request,
@@ -57,20 +58,21 @@ export class AuthController {
 
         response.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 900 * 1000,
         });
 
         response.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
+
+        return 'Successfully logged in';
     }
 
-    @HttpCode(200)
     @Post('/login-access')
     async loginAccess(
         @Req() request: Request,
@@ -85,20 +87,19 @@ export class AuthController {
 
         response.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 900 * 1000,
         });
 
         response.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
     }
 
-    @HttpCode(200)
     @Post('/logout')
     async logout(
         @Req() request: Request,

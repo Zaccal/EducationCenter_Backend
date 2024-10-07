@@ -11,7 +11,18 @@ const PORT = process.env.PORT || 5200;
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    app.enableCors();
+    app.enableCors({
+        credentials: true,
+        origin: [
+            'http://127.0.0.1:5173',
+            'http://127.0.0.1:5000',
+            'http://localhost:5173',
+            'http://localhost:5000',
+            'http://client:5000',
+            'http://client',
+        ],
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    });
     app.setGlobalPrefix('api');
 
     app.use(cookieParser());

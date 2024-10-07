@@ -103,6 +103,7 @@ export class AuthService {
         await this.prismaService.refreshTokens.deleteMany({
             where: {
                 agent,
+                userId: user.id,
             },
         });
 

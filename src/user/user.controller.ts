@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 import { EnumRole } from '@prisma/client';
 import { Auth } from 'src/decarators/auth.decarator';
 import { Role } from 'src/decarators/role.decarator';
@@ -12,12 +20,20 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Get('/:id')
-    async getProfile(@Param('id') id: string) {
-        return await this.userService.getProfile(id);
+    @Auth()
+    @Get('/profile')
+    async getProfile(@CurrentUser('id') userId: number) {
+        return await this.userService.getProfile(userId);
     }
 
     @Auth()
+    @Get('/:id')
+    async getBy(@Param('id') id: string) {
+        return await this.userService.getBy(id);
+    }
+
+    @Auth()
+    @UsePipes(new ValidationPipe())
     @Patch('/:id')
     async updateProfile(
         @Body() dto: updateDto,
@@ -29,6 +45,7 @@ export class UserController {
 
     @Role()
     @setRole(EnumRole.ADMIN)
+    @UsePipes(new ValidationPipe())
     @Patch('/ban/:id')
     async banUser(@Body() dto: BanDto, @Param('id') id: string) {
         return await this.userService.toggleBan(id, dto.isBanned);

@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Param,
+    Patch,
+    Post,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 import { Auth } from 'src/decarators/auth.decarator';
 import { CurrentUser } from 'src/decarators/user.decarator';
 import { AnswerService } from './answer.service';
@@ -11,6 +20,7 @@ export class AnswerController {
 
     @Post('/:questionId')
     @Auth()
+    @UsePipes(new ValidationPipe())
     create(
         @Body() dto: CreateAnswerDto,
         @Param('questionId') questionId: string,
@@ -20,11 +30,13 @@ export class AnswerController {
     }
 
     @Patch('/:answerId')
+    @UsePipes(new ValidationPipe())
     update(@Param('answerId') answerId: string, @Body() dto: UpdateAnswerDto) {
         return this.answerService.update(answerId, dto);
     }
 
     @Delete(':questionId')
+    @UsePipes(new ValidationPipe())
     remove(@Param('questionId') questionId: string) {
         return this.answerService.remove(questionId);
     }

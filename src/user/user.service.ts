@@ -12,7 +12,23 @@ export class UserService {
 
     private user = this.prisma.user;
 
-    async getProfile(id: string) {
+    async getProfile(id: number) {
+        return await this.user.findFirst({
+            where: {
+                id,
+            },
+            select: {
+                id: true,
+                avatar: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+            },
+        });
+    }
+
+    async getBy(id: string) {
         const user = await this.user.findFirst({
             where: {
                 OR: [

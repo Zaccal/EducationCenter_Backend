@@ -14,22 +14,22 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstName String @map("first_name") @unique
-  lastName String @map("last_name") @unique
+  firstName String @unique @map("first_name")
+  lastName  String @unique @map("last_name")
 
-  avatar String @default("/defualt_avatar.jpg")
-  email String @unique
+  avatar   String  @default("/defualt_avatar.jpg")
+  email    String  @unique
   password String
-  isBanned Boolean @default(false) 
+  isBanned Boolean @default(false)
 
-  role EnumRole @default(USER) 
+  role EnumRole @default(USER)
 
   questions Question[]
-  answers Answer[]
+  answers   Answer[]
   homeworks Homework[]
 }
 
@@ -39,20 +39,20 @@ enum EnumRole {
 }
 
 model Lesson {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  url String 
-  title String @unique
+  url         String
+  title       String           @unique
   description String?
-  status EnumStatusLesson @default(NOT_VIEWED)
+  status      EnumStatusLesson @default(NOT_VIEWED)
 
   questions Question[]
 
   homeworks Homework[]
 
-  topic Topic? @relation(fields: [topicId], references: [id])
+  topic   Topic? @relation(fields: [topicId], references: [id])
   topicId Int
 }
 
@@ -63,7 +63,7 @@ enum EnumStatusLesson {
 }
 
 model Topic {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -73,20 +73,20 @@ model Topic {
 }
 
 model Homework {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  lesson Lesson @relation(fields: [lessonId], references: [id])
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
   lessonId Int
 
-  url String 
+  url     String
   comment String?
 
-  status EnumStatus @default(PENDING)
-  estimation EnumEstimation @default(NOT_ESTIMATED) 
+  status     EnumStatus     @default(PENDING)
+  estimation EnumEstimation @default(NOT_ESTIMATED)
 
-  user User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
   userId Int
 }
 
@@ -102,35 +102,45 @@ enum EnumEstimation {
 enum EnumStatus {
   PENDING
   CANCELLED
-  APPRECIATED 
+  APPRECIATED
 }
 
 model Question {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  userId Int 
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 
-  lesson Lesson @relation(fields: [lessonId], references: [id])
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
   lessonId Int
 
   comment String
 
-  answers Answer[] 
+  answers Answer[]
 }
 
 model Answer {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  userId Int 
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 
-  question Question @relation(fields: [questionId], references: [id])
-  questionId Int 
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
 
   comment String
+}
+
+model RefreshTokens {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  token  String
+  agent  String
 }

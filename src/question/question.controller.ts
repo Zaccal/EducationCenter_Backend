@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Param,
+    Post,
+    Put,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 import { Auth } from 'src/decarators/auth.decarator';
 import { CurrentUser } from 'src/decarators/user.decarator';
 import { createDto } from './dto/create.dto';
@@ -9,6 +18,7 @@ export class QuestionController {
     constructor(private readonly questionService: QuestionService) {}
 
     @Post('/:lessonId')
+    @UsePipes(new ValidationPipe())
     @Auth()
     async createQuestion(
         @CurrentUser('id') id: number,
@@ -20,6 +30,7 @@ export class QuestionController {
 
     @Put('/:lessonId')
     @Auth()
+    @UsePipes(new ValidationPipe())
     async updateQuestion(
         @Body() dto: createDto,
         @CurrentUser('id') id: number,

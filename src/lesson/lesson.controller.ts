@@ -7,6 +7,8 @@ import {
     Patch,
     Post,
     Query,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { EnumRole } from '@prisma/client';
 import { Auth } from 'src/decarators/auth.decarator';
@@ -22,6 +24,7 @@ export class LessonController {
     constructor(private readonly lessonService: LessonService) {}
 
     @Get()
+    @UsePipes(new ValidationPipe())
     @Auth()
     async getLesson(@Query() dto: getAllDto) {
         return await this.lessonService.getAll(dto);
@@ -35,6 +38,7 @@ export class LessonController {
 
     @Post()
     @Role()
+    @UsePipes(new ValidationPipe())
     @setRole(EnumRole.ADMIN)
     async create(@Body() dto: CreateDto) {
         return await this.lessonService.createLesson(dto);
@@ -43,6 +47,7 @@ export class LessonController {
     @Patch('/:id')
     @Role()
     @setRole(EnumRole.ADMIN)
+    @UsePipes(new ValidationPipe())
     async update(@Body() dto: patchDto, @Param('id') id: string) {
         return await this.lessonService.patchLesson(dto, id);
     }

@@ -7,6 +7,8 @@ import {
     Post,
     Put,
     Query,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { Auth } from 'src/decarators/auth.decarator';
 import { CurrentUser } from 'src/decarators/user.decarator';
@@ -20,12 +22,14 @@ export class HomeworkController {
 
     @Get()
     @Auth()
+    @UsePipes(new ValidationPipe())
     async getHomeworks(@Query() dto: getAllDto) {
         return await this.homeworkService.getHomeworks(dto);
     }
 
     @Post('/:lessonId')
     @Auth()
+    @UsePipes(new ValidationPipe())
     async submitionHomework(
         @Body() dto: HomeworkDto,
         @CurrentUser('id') userId: number,
@@ -36,6 +40,7 @@ export class HomeworkController {
 
     @Put('/:homeworkId')
     @Auth()
+    @UsePipes(new ValidationPipe())
     async updateHomework(
         @Body() dto: HomeworkDto,
         @Param('homeworkId') homeworkId: string,

@@ -8,6 +8,8 @@ import {
     Patch,
     Post,
     Query,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { EnumRole } from '@prisma/client';
 import { Auth } from 'src/decarators/auth.decarator';
@@ -23,6 +25,7 @@ export class TopicController {
     constructor(private readonly topicService: TopicService) {}
 
     @HttpCode(200)
+    @UsePipes(new ValidationPipe())
     @Post()
     async create(@Body() createTopicDto: CreateTopicDto) {
         return await this.topicService.create(createTopicDto);
@@ -43,6 +46,7 @@ export class TopicController {
     @Role()
     @setRole(EnumRole.ADMIN)
     @Patch(':id')
+    @UsePipes(new ValidationPipe())
     async update(
         @Param('id') id: string,
         @Body() updateTopicDto: UpdateTopicDto,

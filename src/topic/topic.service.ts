@@ -52,6 +52,9 @@ export class TopicService {
                     mode: 'insensitive',
                 },
             },
+            include: {
+                lessons: true,
+            },
             orderBy: orderInput,
             take: perPage,
             skip,
@@ -62,6 +65,9 @@ export class TopicService {
         const topicFound = await this.topic.findFirst({
             where: {
                 id: +id,
+            },
+            include: {
+                lessons: true,
             },
         });
 

@@ -30,7 +30,7 @@ export class AuthController {
         );
 
         response.cookie('accessToken', tokens.accessToken, {
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
             sameSite: 'strict',
             maxAge: 900 * 1000,
@@ -57,7 +57,7 @@ export class AuthController {
         );
 
         response.cookie('accessToken', tokens.accessToken, {
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
             sameSite: 'strict',
             maxAge: 900 * 1000,
@@ -86,7 +86,7 @@ export class AuthController {
         const tokens = await this.authService.getNewTokens(refreshToken);
 
         response.cookie('accessToken', tokens.accessToken, {
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
             sameSite: 'strict',
             maxAge: 900 * 1000,

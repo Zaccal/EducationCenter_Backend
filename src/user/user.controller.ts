@@ -21,9 +21,15 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Auth()
+    @Get('/profile')
+    async getProfile(@CurrentUser('id') userId: number) {
+        return await this.userService.getProfile(userId);
+    }
+
+    @Auth()
     @Get('/:id')
-    async getProfile(@Param('id') id: string) {
-        return await this.userService.getProfile(id);
+    async getBy(@Param('id') id: string) {
+        return await this.userService.getBy(id);
     }
 
     @Auth()

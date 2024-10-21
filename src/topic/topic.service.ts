@@ -96,4 +96,8 @@ export class TopicService {
             },
         });
     }
+
+    async getCountOfTopic() {
+        return await this.topic.count();
+    }
 }

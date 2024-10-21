@@ -73,4 +73,8 @@ export class QuestionService {
             },
         });
     }
+
+    async getCountOfQuestion() {
+        return await this.question.count();
+    }
 }

@@ -134,4 +134,8 @@ export class LessonService {
             },
         });
     }
+
+    async getCountOfLesson() {
+        return await this.lessons.count();
+    }
 }

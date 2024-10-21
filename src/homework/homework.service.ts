@@ -125,4 +125,8 @@ export class HomeworkService {
             },
         });
     }
+
+    async getCountOfHomework() {
+        return await this.homework.count();
+    }
 }

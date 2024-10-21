@@ -104,4 +104,8 @@ export class UserService {
 
         return `User ${user.lastName} ${user.firstName} is ${isBanned ? 'banned' : 'unbanned'}`;
     }
+
+    async getCountOfUser() {
+        return await this.user.count();
+    }
 }

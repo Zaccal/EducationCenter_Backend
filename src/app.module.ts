@@ -9,9 +9,10 @@ import { HomeworkModule } from './homework/homework.module';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { TopicModule } from './topic/topic.module';
+import { CountModule } from './count/count.module';
 
 @Module({
-  imports: [AuthModule, LessonModule, PaginationModule, UserModule, HomeworkModule, QuestionModule, AnswerModule, TopicModule],
+  imports: [AuthModule, LessonModule, PaginationModule, UserModule, HomeworkModule, QuestionModule, AnswerModule, TopicModule, CountModule],
   controllers: [AppController],
   providers: [AppService],
 })

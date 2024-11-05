@@ -68,6 +68,11 @@ export class LessonService {
                         answers: true,
                     },
                 },
+                topic: {
+                    select: {
+                        id: true,
+                    },
+                },
             },
         });
     }

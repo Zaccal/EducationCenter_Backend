@@ -67,7 +67,15 @@ export class TopicService {
                 id: +id,
             },
             include: {
-                lessons: true,
+                lessons: {
+                    include: {
+                        questions: {
+                            include: {
+                                answers: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 

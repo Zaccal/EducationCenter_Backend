@@ -30,6 +30,11 @@ export class LessonController {
         return await this.lessonService.getAll(dto);
     }
 
+    @Get('/statistics/:id')
+    async getStatistic(@Param('id') id: string) {
+        return await this.lessonService.getLessonStatistics(id);
+    }
+
     @Get('/:id')
     @Auth()
     async getLessonById(@Param('id') id: string) {

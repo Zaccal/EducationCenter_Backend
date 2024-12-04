@@ -71,7 +71,18 @@ export class TopicService {
                     include: {
                         questions: {
                             include: {
-                                answers: true,
+                                answers: {
+                                    include: {
+                                        user: {
+                                            select: {
+                                                firstName: true,
+                                                lastName: true,
+                                                id: true,
+                                                avatar: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                     },

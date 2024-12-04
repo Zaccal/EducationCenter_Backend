@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PaginationService } from 'src/pagination/pagination.service';
 import { PrismaService } from 'src/prisma.service';
+import { VideoStatiscticsService } from 'src/video-statisctics/video-statisctics.service';
 import { CreateDto } from './dto/create.dto';
 import { EnumSort, getAllDto } from './dto/getAll.dto';
 import { patchDto } from './dto/patch.dto';
@@ -11,6 +12,7 @@ export class LessonService {
     constructor(
         private prisma: PrismaService,
         private pagination: PaginationService,
+        private videoStatisctics: VideoStatiscticsService,
     ) {}
 
     private lessons = this.prisma.lesson;
@@ -142,5 +144,20 @@ export class LessonService {
 
     async getCountOfLesson() {
         return await this.lessons.count();
+    }
+
+    async getLessonStatistics(videoId: string) {
+        const lesson = await this.lessons.findFirst({
+            where: {
+                id: +videoId,
+            },
+        });
+
+        if (!lesson) throw new NotFoundException('Lesson not found');
+
+        const videoStatisticsResult =
+            await this.videoStatisctics.getVideoStatisctics(lesson.url);
+
+        return videoStatisticsResult;
     }
 }

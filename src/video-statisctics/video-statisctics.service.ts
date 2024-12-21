@@ -29,7 +29,7 @@ export class VideoStatiscticsService {
             .get<YouTubeVideoResponse>(url)
             .toPromise();
 
-        return response.data.items[0].statistics;
+        return response.data;
     }
 
     private getVideoId(link: string) {

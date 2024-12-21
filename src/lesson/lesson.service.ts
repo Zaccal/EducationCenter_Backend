@@ -158,6 +158,6 @@ export class LessonService {
         const videoStatisticsResult =
             await this.videoStatisctics.getVideoStatisctics(lesson.url);
 
-        return videoStatisticsResult;
+        return videoStatisticsResult.items[0].statistics;
     }
 }
